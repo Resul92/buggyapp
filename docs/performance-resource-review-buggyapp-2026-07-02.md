@@ -8,7 +8,6 @@ High-confidence, low-risk fixes were limited to guardrails that do not change th
 
 - Log4j2 internal status logging now uses `WARN` instead of `debug`.
 - Log4j2 rolling files now have a 250 MB size-based rollover policy in addition to daily rollover.
-- The Ant test classpath now uses the same Log4j2 version as the compile classpath.
 - `LaunchBuggyAppServlet.BuggyAppThread` no longer retains the unused `HttpServletRequest`.
 
 Broader behavior such as bounded executors, per-demo single-flight locking, endpoint authentication, Docker heap defaults, and demo stop-path redesign were documented for human review because they affect product semantics or operational policy.
@@ -118,7 +117,7 @@ Broader behavior such as bounded executors, per-demo single-flight locking, endp
 - **Impact:** Test/runtime mismatch and possible failed test setup on clean checkouts.
 - **Recommended fix:** Align the test classpath to Log4j2 `2.24.3`.
 - **Validation method:** Static check and Ant test execution when dependency jars are available.
-- **Status:** Fixed.
+- **Decision:** Documented only; the change is build-hygiene rather than a direct performance guardrail and should be handled with dependency restoration/testing.
 
 ### Low: Embedded launch script backgrounds the JVM
 
@@ -138,8 +137,7 @@ Applied in this review:
 1. Keep intentional chaos scenarios unchanged.
 2. Remove unused request retention from the servlet worker.
 3. Harden Log4j2 status logging and size rollover in both source and generated-classpath copies.
-4. Align Ant test Log4j2 classpath with compile-time Log4j2.
-5. Verify with static guardrail checks and XML parsing.
+4. Verify with static guardrail checks and XML parsing.
 
 Recommended for human review:
 
