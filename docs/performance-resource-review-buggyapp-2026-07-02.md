@@ -160,7 +160,7 @@ Recommended for human review:
 
 ## 8. Created Pull Requests
 
-- Pending: a Cursor Automation Agent pull request will be opened from branch `cursor/performance-resource-review-9de7` after verification.
+- https://github.com/Resul92/buggyapp/pull/2 - Adds the small high-confidence guardrail fixes from this review.
 
 ## 9. Open Questions / Required Human Review
 
