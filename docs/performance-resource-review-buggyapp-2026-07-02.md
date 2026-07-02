@@ -277,7 +277,7 @@ Do not modify core simulation logic (memory leaks, connection leaks, N+1, CPU sp
 
 | PR | Branch | Description |
 |----|--------|-------------|
-| *(created by this run)* | `cursor/backend-performance-review-1df9` | Lifecycle stop-handler fixes, Log4j guardrails, servlet request retention removal |
+| [PR #3](https://github.com/Resul92/buggyapp/pull/3) | `cursor/backend-performance-review-1df9` | Lifecycle stop-handler fixes, Log4j guardrails, servlet request retention removal, full review report |
 
 Previous automation runs:
 - [PR #1](https://github.com/Resul92/buggyapp/pull/1) — branch `cursor/performance-resource-review-227f`
