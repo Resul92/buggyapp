@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="debug">
+<Configuration status="WARN">
   <Appenders>
     <Console name="CONSOLE" target="SYSTEM_OUT">
       <PatternLayout pattern="%d %p %c{1.} [%t] %X{sessionId} %X{txnId} %m%n"/>
@@ -9,7 +9,7 @@
 		<Policies>
 			<!-- <OnStartupTriggeringPolicy /> -->
 			<TimeBasedTriggeringPolicy />
-			<!-- <SizeBasedTriggeringPolicy size="250 MB" />  -->
+			<SizeBasedTriggeringPolicy size="250 MB" />
 		</Policies>
 		<DefaultRolloverStrategy max="30"/>
     </RollingFile>
