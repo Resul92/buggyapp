@@ -85,7 +85,7 @@ Highest operational risks if this app is deployed outside an isolated lab:
 - **Confidence:** High
 - **CPU/RAM impact:** File descriptor exhaustion, kernel memory pressure, and filesystem/inode pressure.
 - **Recommended fix:** Use try-with-resources and bounded handle counts; add monitoring on open FD counts.
-- **Validation method:** Lower `ulimit -n`, run `bug10`/`bug17`/`bug18`, and monitor `lsof -p <pid>` or `/proc/<pid>/fd`.
+- **Validation method:** Lower `ulimit -n`; run `bug10` for `FileConnectionLeak`, run `bug18` for `FileChannelLeakSimulator`, and invoke `FileLeakSimulator` directly because `LaunchPad` maps `bug17` to `FileLeakDemo` rather than this simulator. Monitor `lsof -p <pid>` or `/proc/<pid>/fd`.
 
 ### C6. HTTP socket leak and no network timeouts
 
@@ -135,14 +135,14 @@ Highest operational risks if this app is deployed outside an isolated lab:
 
 ### H4. Heavy disk I/O and disk-fill scenarios
 
-- **File path:** `src/com/buggyapp/io/IOThread.java`, `src/com/buggyapp/diskspace/DiskSpaceService.java`
-- **Function/class:** `IOThread.run()`, `DiskSpaceService.fillDiskSpace()`
-- **Code evidence:** `IOThread.run()` repeatedly writes and reads files while `flag` is true (`IOThread.java:46-64`). `DiskSpaceService.fillDiskSpace()` writes 1 MiB chunks until a requested percentage of usable disk is filled (`DiskSpaceService.java:22-44`).
+- **File path:** `src/com/buggyapp/io/IOThread.java`, `src/com/buggyapp/diskspace/DiskSpaceService.java`, `src/com/buggyapp/fileleak/FileLeakDemo.java`
+- **Function/class:** `IOThread.run()`, `DiskSpaceService.fillDiskSpace()`, `FileLeakDemo.start()`
+- **Code evidence:** `IOThread.run()` repeatedly writes and reads files while `flag` is true (`IOThread.java:46-64`). `DiskSpaceService.fillDiskSpace()` writes 1 MiB chunks until a requested percentage of usable disk is filled (`DiskSpaceService.java:22-44`). `LaunchPad` maps `bug17` to `FileLeakDemo.start()` (`LaunchPad.java:188-192`), which creates many files via a 200-thread pool; this is a disk/inode storm rather than the `FileLeakSimulator` FD leak.
 - **Severity:** High
 - **Confidence:** High
 - **CPU/RAM impact:** Disk throughput saturation, ephemeral storage exhaustion, inode pressure, and latency for other workloads sharing the same volume.
 - **Recommended fix:** Require isolated temp volumes, quotas, cleanup, and rate limits for demo scenarios.
-- **Validation method:** Run `bug8`/`bug12` on a disposable volume; monitor `df -h`, `iostat`, and application latency.
+- **Validation method:** Run `bug8`/`bug12`/`bug17` on a disposable volume; monitor `df -h`, inode usage, `iostat`, and application latency.
 
 ### H5. Forced GC and retained allocations in an infinite loop
 
@@ -181,14 +181,25 @@ Highest operational risks if this app is deployed outside an isolated lab:
 
 - **File path:** `Dockerfile`
 - **Function/class:** Container `ENTRYPOINT`
-- **Code evidence:** Line 20 launches Java with `-Xms2g`, `-Xmx4g`, and `-AconnectionTimeout=3600000`.
+- **Code evidence:** Line 20 launches Java with `-Xms2g`, `-Xmx4g`, and `-AconnectionTimeout=3600000`. The exec-form `ENTRYPOINT` also appears malformed because `"--" "java"` is missing a comma, so Docker runtime behavior should be validated before relying on the image.
 - **Severity:** High
 - **Confidence:** High
 - **CPU/RAM impact:** Heap may exceed container limits or leave insufficient native memory; stalled clients can hold Tomcat sockets/threads for up to an hour.
 - **Recommended fix:** Use configurable `JAVA_OPTS`, container-aware memory percentages, and a shorter connector timeout aligned with `maxThreads`/`acceptCount`.
 - **Validation method:** Run the image with `--memory=2g`; load-test slow clients and monitor Tomcat thread/socket counts.
 
-### H9. Log files had no size-based rollover
+### H9. Launchable slow-network client creates high CPU/RAM/network pressure
+
+- **File path:** `src/com/buggyapp/netwrorkslowness/SlowNetworkClientExample.java`, `src/com/buggyapp/LaunchPad.java`
+- **Function/class:** `SlowNetworkClientExample.start()`, `LaunchPad.main()`
+- **Code evidence:** `LaunchPad` exposes this path as `bug20` / `NETWORK_SLOWNESS` (`LaunchPad.java:205-208`). `SlowNetworkClientExample.start()` creates a 200-thread pool and submits 500 socket tasks (`SlowNetworkClientExample.java:19-24`), reads a 500 KB response slowly through `ThrottledInputStream` (`lines 31-39`), burns CPU per chunk (`lines 41-44`), and clones each payload 5,000 times (`lines 51-55`).
+- **Severity:** High
+- **Confidence:** High
+- **CPU/RAM impact:** High network concurrency, blocked sockets without explicit timeouts, CPU burn per read chunk, and severe allocation/GC pressure from cloned payloads.
+- **Recommended fix:** Add socket timeouts, cap concurrency, remove payload cloning, stream/process bounded chunks, and keep this scenario isolated if retained as a demo.
+- **Validation method:** Run `bug20` in a controlled environment; monitor thread count, socket states, allocation rate, GC logs, and outbound bandwidth.
+
+### H10. Log files had no size-based rollover
 
 - **File path:** `resources/log4j2.xml`, `webroot/WEB-INF/classes/log4j2.xml`
 - **Function/class:** Log4j `RollingFile` policies
