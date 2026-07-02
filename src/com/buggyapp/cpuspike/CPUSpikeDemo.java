@@ -39,8 +39,8 @@ public class CPUSpikeDemo {
 	}
 	
 	public static void stop() {
-		
-		new CPUSpikerThread().stop();
+
+		// CPUSpikerThread.setFlag(false) is invoked by LaunchPad.stop(); threads exit cooperatively.
 		System.out.println("CPU spike terminated!");
 	}
 }

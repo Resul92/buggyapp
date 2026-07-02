@@ -7,15 +7,20 @@ import java.util.HashMap;
  * @author Ram Lakshmanan
  */
 public class MapManager {
-	
+
 	//private static final Logger s_logger = LogManager.getLogger(MapManager.class);
+	private static volatile boolean flag = true;
 
 	HashMap<Object, Object> myMap = new HashMap<>();
-	
+
+	public static void setFlag(boolean newValue) {
+		flag = newValue;
+	}
+
 	public void grow() {
-		
+
 		long counter = 0;
-		while (true) {
+		while (flag) {
 		
 			if (counter % 1000 == 0) {
 				
