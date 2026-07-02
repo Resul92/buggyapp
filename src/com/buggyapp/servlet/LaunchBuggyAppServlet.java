@@ -70,9 +70,9 @@ public class LaunchBuggyAppServlet extends HttpServlet {
 			
 			//String[] strArray = {buggyAppTypeParam, flag};
 			
-			// we will endup spawning new thread for each request. Eventually this has to be converted 
+			// we will endup spawning new thread for each request. Eventually this has to be converted
 			// in to Executor.
-			new BuggyAppThread(request, buggyAppTypeParam, booleanFlag).start();
+			new BuggyAppThread(buggyAppTypeParam, booleanFlag).start();
 			
 			Map<String, String> map = new HashMap<>();
 			map.clear();
@@ -180,14 +180,12 @@ public class LaunchBuggyAppServlet extends HttpServlet {
 	}
 
 	protected class BuggyAppThread extends Thread {
-		
-		HttpServletRequest request;
+
 		String buggyAppTypeParam;
 		Boolean booleanFlag;
-		
-		public BuggyAppThread(HttpServletRequest request, String buggyAppTypeParam, Boolean booleanFlag) {
-			
-			this.request = request;
+
+		public BuggyAppThread(String buggyAppTypeParam, Boolean booleanFlag) {
+
 			this.buggyAppTypeParam = buggyAppTypeParam;
 			this.booleanFlag = booleanFlag;
 		}

@@ -247,8 +247,8 @@ public class LaunchPad {
 	 * @param buggyAppTypeParam
 	 */
 	public static void stop(String buggyAppTypeParam) {
-		
-		System.out.println("Application started!");
+
+		System.out.println("Application stopped!");
 
 		try {
 			
@@ -263,18 +263,21 @@ public class LaunchPad {
 				MemoryLeakDemo.stop();
 				break;
 				
+			case "bug1.1":
+				com.buggyapp.memoryleakthread.MapManager.setFlag(false);
+				break;
+
 			case "bug1.2":
 			case "PROBLEM_MEMORY":
-				
+
 				MemoryLeakNoOOMDemo.setFlag(false);
 				MemoryLeakNoOOMDemo.stop();
 				break;
-				
-	
-			case "bug2":	
+
+			case "bug2":
 				// Putting Finalizer thread to sleep
 				// usage: java -Xmx512m -jar buggyApp.jar bug2
-				SlowFinalizeDemo.start();
+				SlowFinalizeDemo.stop();
 				break;
 				
 			case "bug3":
@@ -335,8 +338,7 @@ public class LaunchPad {
 				
 			case "bug9":
 			case "PROBLEM_EXCEPTIONS":
-				ExceptionsDemo eDemo = new ExceptionsDemo();
-				eDemo.start();
+				ExceptionsDemo.stop();
 				break;	
 				
 			case "bug10":
