@@ -326,7 +326,7 @@ Highest operational risks if this app is deployed outside an isolated lab:
 
 ## 8. Created Pull Requests
 
-- Pending: logging rollover/status guardrail PR will be opened from branch `cursor/performance-resource-review-227f`.
+- Logging rollover/status guardrail: https://github.com/Resul92/buggyapp/pull/1
 
 ## 9. Open Questions / Required Human Review
 
