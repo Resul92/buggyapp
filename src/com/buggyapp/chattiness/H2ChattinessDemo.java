@@ -4,6 +4,8 @@ import java.sql.*;
 
 public class H2ChattinessDemo {
 
+    private static final int SAMPLE_ROW_COUNT = 10_000;
+
     public static void main(String[] args) throws Exception {
     	start();
     }
@@ -17,7 +19,7 @@ public class H2ChattinessDemo {
         // Chatty access: thousands of small, repeated queries
         for (int i = 1; i <= 50000000; i++) {
             try (PreparedStatement ps = conn.prepareStatement("SELECT name FROM test_data WHERE id = ?")) {
-                ps.setInt(1, i % 10000);  // IDs loop from 0 to 9999
+                ps.setInt(1, i % SAMPLE_ROW_COUNT);
                 ResultSet rs = ps.executeQuery();
 
                 while (rs.next()) {
@@ -43,7 +45,7 @@ public class H2ChattinessDemo {
         // Fill table with 10,000 rows
         conn.setAutoCommit(false);
         try (PreparedStatement ps = conn.prepareStatement("INSERT INTO test_data (id, name) VALUES (?, ?)")) {
-            for (int i = 0; i < 50000000; i++) {
+            for (int i = 0; i < SAMPLE_ROW_COUNT; i++) {
                 ps.setInt(1, i);
                 ps.setString(2, "Name_" + i);
                 ps.addBatch();
