@@ -17,4 +17,4 @@ RUN curl -fsSL https://tier1app.com/dist/buggyapp/buggyapp-latest.zip -o buggyap
 # buggyapp
 EXPOSE 9010
 
-ENTRYPOINT ["/usr/bin/tini", "--" "java", "-Xms2g", "-Xmx4g", "-DlogDir=.", "-DuploadDir=.", "-jar", "webapp-runner.jar", "-AconnectionTimeout=3600000", "--port", "9010", "buggyapp.war"]
+ENTRYPOINT ["/usr/bin/tini", "--", "java", "-Xms2g", "-Xmx4g", "-DlogDir=.", "-DuploadDir=.", "-jar", "webapp-runner.jar", "-AconnectionTimeout=3600000", "--port", "9010", "buggyapp.war"]
